@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RatingFilmAja — Temukan film favoritmu</title>
+  <!-- Bootstrap hanya dipakai sebagai CSS framework. Tidak memuat Bootstrap JS. -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#" onclick="showHome(); return false;">
+      <span class="brand-mark"><i class="bi bi-star-fill"></i></span>RatingFilmAja
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Buka navigasi">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item"><a class="nav-link active" id="homeNav" href="#" onclick="showHome(); return false;">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link genre-nav" href="#action" onclick="showGenre('Action'); return false;">Action</a></li>
+        <li class="nav-item"><a class="nav-link genre-nav" href="#thriller" onclick="showGenre('Thriller'); return false;">Thriller</a></li>
+        <li class="nav-item"><a class="nav-link genre-nav" href="#horror" onclick="showGenre('Horror'); return false;">Horror</a></li>
+        <li class="nav-item"><a class="nav-link genre-nav" href="#drama" onclick="showGenre('Drama'); return false;">Drama</a></li>
+        <li class="nav-item"><a class="nav-link genre-nav" href="#crime" onclick="showGenre('Crime'); return false;">Crime</a></li>
+      </ul>
+      <a class="btn btn-accent btn-sm ms-lg-3 mt-3 mt-lg-0 px-3 py-2" href="#film" onclick="showHome(); return true;">Jelajahi Film</a>
+    </div>
+  </div>
+</nav>
+
+<main id="homePage">
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow mb-3">Tempat cerita dan rating bertemu</div>
+      <h1>Temukan film yang <span>layak ditonton.</span></h1>
+      <p class="mt-3 mb-4">Jelajahi rekomendasi film berdasarkan genre favoritmu. Kelola koleksi film dari halaman setiap genre.</p>
+      <div class="search-wrap">
+        <i class="bi bi-search align-self-center ms-2 text-secondary"></i>
+        <input id="searchInput" type="search" placeholder="Cari judul film atau genre..." aria-label="Cari film">
+        <button class="btn btn-accent px-3" id="searchButton" type="button">Cari</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="container pb-4" id="film">
+    <div class="section-heading">
+      <div><h2>Rekomendasi untukmu</h2><p>Satu film dengan rating tertinggi dari setiap genre.</p></div>
+      <span class="text-secondary small"><i class="bi bi-collection-play me-1"></i>Movie collection</span>
+    </div>
+    <div id="recommendationList"></div>
+    <div id="homeEmpty" class="empty-state">Film tidak ditemukan. Coba kata kunci lain.</div>
+  </section>
+</main>
+
+<section id="genrePage" class="genre-page">
+  <div class="container">
+    <button class="btn btn-outline-soft btn-sm mb-4" onclick="showHome()"><i class="bi bi-arrow-left me-1"></i>Kembali ke Beranda</button>
+    <div class="genre-hero">
+      <div class="eyebrow">Jelajahi berdasarkan genre</div>
+      <h1 id="genreTitle" class="fw-bold mt-2 mb-2">Action</h1>
+      <p id="genreDescription" class="mb-0 text-secondary">Kumpulan film pilihan dari genre ini.</p>
+    </div>
+    <div id="genreMovies" class="movie-list"></div>
+    <div id="genreEmpty" class="empty-state">Belum ada film pada genre ini. Tambahkan film pertamamu!</div>
+    <div class="add-movie-area">
+      <button class="btn btn-accent px-4 py-3" id="addMovieButton" type="button" onclick="openMovieForm()">
+        <i class="bi bi-plus-circle me-2"></i>Tambah Film
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Form tambah dan update film -->
+<div class="form-modal" id="movieFormModal" aria-hidden="true">
+  <div class="form-backdrop" onclick="closeMovieForm()"></div>
+  <div class="form-dialog" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div class="form-header">
+      <div><div class="eyebrow">Kelola koleksi film</div><h2 id="formTitle">Tambah Film</h2></div>
+      <button class="modal-close" type="button" onclick="closeMovieForm()" aria-label="Tutup">&times;</button>
+    </div>
+    <form id="movieForm">
+      <div class="form-body">
+        <div class="mb-3">
+          <label class="form-label" for="movieTitle">Judul Film *</label>
+          <input class="form-control" id="movieTitle" type="text" maxlength="100" required placeholder="Contoh: Interstellar">
+        </div>
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <label class="form-label" for="movieYear">Tahun Rilis *</label>
+            <input class="form-control" id="movieYear" type="number" min="1888" max="2100" required placeholder="Contoh: 2024">
+          </div>
+          <div class="col-sm-6 mb-3">
+            <label class="form-label" for="movieRating">Rating (0–10) *</label>
+            <input class="form-control" id="movieRating" type="number" min="0" max="10" step="0.1" required placeholder="Contoh: 8.5">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="movieGenre">Genre *</label>
+          <select class="form-select" id="movieGenre" required>
+            <option value="">Pilih genre</option>
+            <option>Action</option><option>Thriller</option><option>Horror</option><option>Drama</option><option>Crime</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="movieDescription">Deskripsi *</label>
+          <textarea class="form-control" id="movieDescription" rows="4" maxlength="700" required placeholder="Tuliskan sinopsis singkat film..."></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="moviePoster">Poster Film</label>
+          <input class="form-control" id="moviePoster" type="file" accept="image/png,image/jpeg,image/webp">
+          <div class="form-text">Format JPG, PNG, atau WEBP. Maksimal 2 MB. Jika tidak memilih gambar saat edit, poster lama akan tetap digunakan.</div>
+          <img id="posterPreview" class="poster-preview" alt="Preview poster" hidden>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-outline-soft" type="button" onclick="closeMovieForm()">Batal</button>
+        <button class="btn btn-accent" type="submit" id="saveMovieButton">Lanjutkan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal detail -->
+<div class="detail-modal" id="detailModal" aria-hidden="true">
+  <div class="detail-modal-backdrop" onclick="closeDetails()"></div>
+  <div class="detail-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="detail-modal-header">
+      <div><div class="eyebrow">Detail film</div><h2 id="detailTitle"></h2></div>
+      <button type="button" class="modal-close" onclick="closeDetails()" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="detail-modal-body">
+      <img id="detailPoster" class="detail-poster" alt="Poster film">
+      <div class="text-secondary small my-3" id="detailMeta"></div>
+      <div class="rating mb-3"><i class="bi bi-star-fill"></i> <span id="detailRating"></span>/10</div>
+      <p id="detailDescription" class="mb-0 modal-description"></p>
+    </div>
+  </div>
+</div>
+
+<footer><div class="container d-flex flex-wrap justify-content-between gap-2">
+  <span><strong class="text-light">RatingFilmAja</strong> — Temukan cerita favoritmu.</span>
+  <span>© 2026 RatingFilmAja. Dibuat untuk pecinta film.</span>
+</div></footer>
+
+<script src="script.js"></script>
+</body>
+</html>
